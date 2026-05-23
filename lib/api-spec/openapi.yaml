@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Parrot Translator API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: translate
+    description: Translation operations
+  - name: history
+    description: Translation history
+  - name: favorites
+    description: Favorite translations
+  - name: phrase
+    description: Phrase of the day
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +30,160 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /translate:
+    post:
+      operationId: translate
+      tags: [translate]
+      summary: Translate text between languages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateInput"
+      responses:
+        "200":
+          description: Translation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslateResult"
+        "400":
+          description: Bad request
+
+  /detect:
+    post:
+      operationId: detectLanguage
+      tags: [translate]
+      summary: Detect the language of text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DetectInput"
+      responses:
+        "200":
+          description: Detected language
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectResult"
+        "400":
+          description: Bad request
+
+  /history:
+    get:
+      operationId: listHistory
+      tags: [history]
+      summary: Get translation history
+      responses:
+        "200":
+          description: List of recent translations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HistoryItem"
+    post:
+      operationId: addHistory
+      tags: [history]
+      summary: Save a translation to history
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HistoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoryItem"
+
+  /history/{id}:
+    delete:
+      operationId: deleteHistory
+      tags: [history]
+      summary: Delete a history item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /favorites:
+    get:
+      operationId: listFavorites
+      tags: [favorites]
+      summary: Get favorite translations
+      responses:
+        "200":
+          description: List of favorites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FavoriteItem"
+    post:
+      operationId: addFavorite
+      tags: [favorites]
+      summary: Add a translation to favorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteItem"
+
+  /favorites/{id}:
+    delete:
+      operationId: deleteFavorite
+      tags: [favorites]
+      summary: Remove a favorite
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /phrase-of-day:
+    get:
+      operationId: getPhraseOfDay
+      tags: [phrase]
+      summary: Get word or phrase of the day
+      responses:
+        "200":
+          description: Phrase of the day
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhraseOfDay"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +194,123 @@ components:
       required:
         - status
 
+    TranslateInput:
+      type: object
+      required: [text, source, target]
+      properties:
+        text:
+          type: string
+          minLength: 1
+        source:
+          type: string
+        target:
+          type: string
+
+    TranslateResult:
+      type: object
+      required: [translatedText, source, target, originalText]
+      properties:
+        translatedText:
+          type: string
+        originalText:
+          type: string
+        source:
+          type: string
+        target:
+          type: string
+        detectedLanguage:
+          type: ["string", "null"]
+
+    DetectInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+
+    DetectResult:
+      type: object
+      required: [language, confidence]
+      properties:
+        language:
+          type: string
+        confidence:
+          type: number
+
+    HistoryItem:
+      type: object
+      required: [id, originalText, translatedText, sourceLanguage, targetLanguage, createdAt]
+      properties:
+        id:
+          type: integer
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        createdAt:
+          type: string
+
+    HistoryInput:
+      type: object
+      required: [originalText, translatedText, sourceLanguage, targetLanguage]
+      properties:
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+
+    FavoriteItem:
+      type: object
+      required: [id, originalText, translatedText, sourceLanguage, targetLanguage, createdAt]
+      properties:
+        id:
+          type: integer
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        createdAt:
+          type: string
+
+    FavoriteInput:
+      type: object
+      required: [originalText, translatedText, sourceLanguage, targetLanguage]
+      properties:
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+
+    PhraseOfDay:
+      type: object
+      required: [phrase, translation, sourceLanguage, targetLanguage, pronunciationHint]
+      properties:
+        phrase:
+          type: string
+        translation:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        pronunciationHint:
+          type: string
+        funFact:
+          type: ["string", "null"]
