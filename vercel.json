@@ -1,0 +1,8 @@
+{
+  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/parrot-translator run build",
+  "outputDirectory": "artifacts/parrot-translator/dist/public",
+  "installCommand": "pnpm install",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" }
+  ]
+}

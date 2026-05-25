@@ -75,6 +75,7 @@ export default function Translate() {
       }, 1500);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [translateMutation.isPending]);
 
   const handleTranslate = () => {

@@ -17,7 +17,7 @@ export function ParrotMascot({ state, chaosMode = false, className = '' }: Parro
 
   // Base animations
   const bodyVariants = {
-    idle: { y: [0, -5, 0], rotate: 0, transition: { repeat: Infinity, duration: 2, ease: "easeInOut" } },
+    idle: { y: [0, -5, 0], rotate: 0, transition: { repeat: Infinity, duration: 2, ease: "easeInOut" as const } },
     listening: { y: [0, -2, 0], scale: 1.05, rotate: 5, transition: { repeat: Infinity, duration: 1 } },
     translating: { y: [0, -10, 0], rotate: [-5, 5, -5], transition: { repeat: Infinity, duration: 0.5 } },
     talking: { y: [0, -5, 0], transition: { repeat: Infinity, duration: 0.3 } },
@@ -43,7 +43,7 @@ export function ParrotMascot({ state, chaosMode = false, className = '' }: Parro
   const eyeVariants = {
     idle: { scaleY: [1, 0.1, 1], transition: { repeat: Infinity, duration: 4, times: [0, 0.05, 0.1] } },
     listening: { scale: 1.2 },
-    translating: { rotate: 360, transition: { repeat: Infinity, duration: 0.5, ease: "linear" } },
+    translating: { rotate: 360, transition: { repeat: Infinity, duration: 0.5, ease: "linear" as const } },
     excited: { scale: 1.5, rotate: [0, 180, 360], transition: { repeat: Infinity, duration: 0.5 } },
     talking: { scale: 1 }
   };
