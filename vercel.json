@@ -1,6 +1,6 @@
 {
-  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/parrot-translator run build",
-  "outputDirectory": "artifacts/parrot-translator/dist/public",
+  "buildCommand": "BASE_PATH=/ pnpm --filter @workspace/parrot-translator run build && mkdir -p dist/public && cp -r artifacts/parrot-translator/dist/public/. dist/public/",
+  "outputDirectory": "dist/public",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/index" },
